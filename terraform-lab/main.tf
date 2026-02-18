@@ -74,3 +74,21 @@ resource "aws_instance" "my_server" {
 output "public_ip" {
   value = aws_instance.my_server.public_ip
 }
+
+# 4. The Watchdog (CloudWatch Alarm)
+resource "aws_cloudwatch_metric_alarm" "cpu_alert" {
+  alarm_name          = "high-cpu-alarm"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = "80"
+  alarm_description   = "This metric monitors ec2 cpu utilization"
+  
+  # Tell it WHICH server to watch
+  dimensions = {
+    InstanceId = aws_instance.my_server.id
+  }
+}

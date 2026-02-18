@@ -1,0 +1,36 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    
+    # 1. Set Environment Variables from Secrets
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AKIAT4PSR6DLGPD3R4NL }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.B/HUmqNmck1Go0sualAXgOjJE0aMfSdoIkFeWYBm }}
+      AWS_REGION: "ap-south-1"
+
+    steps:
+      # 2. Download your code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 3. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      # 4. Initialize (Connect to S3 Backend)
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform-lab
+
+      # 5. Apply (Build the Server)
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./terraform-lab
